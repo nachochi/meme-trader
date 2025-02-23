@@ -1,154 +1,621 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Solana DEX Bot</title>
+
+    <title>Ultimate Solana Memecoin Sniper</title>
+
     <style>
+
         body {
-            font-family: Arial, sans-serif;
+
+            ;
+
             margin: 0;
+
             padding: 20px;
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            color: white;
+
+            background: linear-gradient(135deg, #0a1f3d, #1a3a6a);
+
+            ;
+
             text-align: center;
+
             -webkit-user-select: none;
+
             user-select: none;
+
+            overflow-x: hidden;
+
         }
-        h1 {
-            font-size: 28px;
-            margin-bottom: 20px;
-        }
+
         .container {
-            max-width: 600px;
+
+            max-width: 800px;
+
             margin: 0 auto;
+
+            background: rgba(255, 255, 255, 0.05);
+
+            padding: 30px;
+
+            border-radius: 15px;
+
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+
+            backdrop-filter: blur(10px);
+
+            animation: fadeIn 1s ease-in;
+
+        }
+
+        @keyframes fadeIn {
+
+            from { opacity: 0; transform: translateY(20px); }
+
+            to { opacity: 1; transform: translateY(0); }
+
+        }
+
+        h1 {
+
+            ;
+
+            margin-bottom: 25px;
+
+            text-shadow: 0 2px 4px rgba(0, 0, 255, 0.3);
+
+            animation: pulse 2s infinite ease-in-out;
+
+        }
+
+        @keyframes pulse {
+
+            0% { transform: scale(1); }
+
+            50% { transform: scale(1.05); }
+
+            100% { transform: scale(1); }
+
+        }
+
+        .data, .memecoin-option, .paper-trade {
+
+            ;
+
+            margin: 15px 0;
+
+            padding: 10px;
+
             background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .data {
-            font-size: 20px;
-            margin: 10px 0;
-            transition: color 0.3s;
-        }
-        .data.error {
-            color: #ff5555;
-        }
-        button {
-            padding: 15px 30px;
-            font-size: 18px;
-            margin: 8px;
-            background-color: #28a745;
-            color: white;
-            border: none;
+
             border-radius: 8px;
+
+            transition: transform 0.3s, color 0.3s;
+
+        }
+
+        .data.error, .memecoin-option.error, .paper-trade.error {
+
+            ;
+
+            background: rgba(255, 85, 85, 0.1);
+
+            transform: scale(0.95);
+
+        }
+
+        .data:hover, .memecoin-option:hover, .paper-trade:hover {
+
+            transform: scale(1.02);
+
+        }
+
+        .memecoin-select {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            justify-content: center;
+
+            gap: 10px;
+
+            margin: 20px 0;
+
+        }
+
+        .memecoin-option {
+
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
+
+            background: rgba(255, 255, 255, 0.15);
+
+        }
+
+        .memecoin-option.selected {
+
+            background: rgba(0, 123, 255, 0.3);
+
+            border: 2px solid #007bff;
+
+        }
+
+        .wallets {
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 15px;
+
+            margin: 20px 0;
+
+            flex-wrap: wrap;
+
+        }
+
+        .paper-trades {
+
+            max-height: 200px;
+
+            overflow-y: auto;
+
+            text-align: left;
+
+            margin: 20px auto;
+
+            padding: 10px;
+
+            background: rgba(255, 255, 255, 0.1);
+
+            border-radius: 8px;
+
+        }
+
+        button {
+
+            padding: 18px 40px;
+
+            ;
+
+            margin: 10px;
+
+            background: linear-gradient(45deg, #28a745, #2ecc71);
+
+            ;
+
+            border: none;
+
+            border-radius: 12px;
+
+            cursor: pointer;
+
+            transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+
             touch-action: manipulation;
+
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+
         }
+
         button:hover, button:active {
-            background-color: #218838;
+
+            background: linear-gradient(45deg, #218838, #27ae60);
+
             transform: scale(1.05);
+
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.5);
+
         }
-        #buyBtn { background-color: #007bff; }
-        #buyBtn:hover, #buyBtn:active { background-color: #0069d9; }
-        #sellBtn { background-color: #dc3545; }
-        #sellBtn:hover, #sellBtn:active { background-color: #c82333; }
-        #autoBtn { background-color: #ffc107; color: black; }
-        #autoBtn:hover, #autoBtn:active { background-color: #e0a800; }
+
+        #buyBtn { background: linear-gradient(45deg, #007bff, #0056b3); }
+
+        #buyBtn:hover, #buyBtn:active { background: linear-gradient(45deg, #0069d9, #004085); }
+
+        #sellBtn { background: linear-gradient(45deg, #dc3545, #c82333); }
+
+        #sellBtn:hover, #sellBtn:active { background: linear-gradient(45deg, #bd2130, #a71d2a); }
+
+        #autoBtn { background: linear-gradient(45deg, #ffc107, #e0a800); ; }
+
+        #autoBtn:hover, #autoBtn:active { background: linear-gradient(45deg, #d39e00, #c69500); }
+
+        .web3-glow {
+
+            position: fixed;
+
+            top: 0;
+
+            left: 0;
+
+            width: 100%;
+
+            height: 100%;
+
+            background: radial-gradient(circle, rgba(0, 191, 255, 0.1) 0%, transparent 70%);
+
+            pointer-events: none;
+
+            z-index: -1;
+
+            animation: glowPulse 10s infinite ease-in-out;
+
+        }
+
+        @keyframes glowPulse {
+
+            0% { opacity: 0.3; }
+
+            50% { opacity: 0.6; }
+
+            100% { opacity: 0.3; }
+
+        }
+
     </style>
+
 </head>
+
 <body>
+
+    <div class="web3-glow"></div>
+
     <div class="container">
-        <h1>Ultimate Solana DEX Bot</h1>
+
+        <h1>Ultimate Solana Memecoin Sniper</h1>
+
         <div class="data" id="price">Price: Loading...</div>
+
         <div class="data" id="sentiment">Sentiment: Loading...</div>
-        <div class="data" id="balance">Balance: Loading...</div>
+
+        <div class="memecoin-select" id="memecoinSelect"></div>
+
+        <div class="wallets" id="balance"></div>
+
         <div class="data" id="status">Status: Waiting...</div>
-        <button id="buyBtn" onclick="manualTrade('buy')">Buy</button>
-        <button id="sellBtn" onclick="manualTrade('sell')">Sell</button>
-        <button id="autoBtn" onclick="autoTrade()">Auto Trade</button>
+
+        <div class="paper-trades" id="paperTrades"></div>
+
+        <button id="buyBtn" onclick="manualTrade('buy')">Snipe Buy</button>
+
+        <button id="sellBtn" onclick="manualTrade('sell')">Secure Sell</button>
+
+        <button id="autoBtn" onclick="autoTrade()">Auto Sniper</button>
+
+        <button onclick="startPaperTrading()">Start Paper Trading</button>
+
     </div>
 
+
     <script>
+
         const BASE_URL = window.location.origin;
 
-        async function updatePrice() {
+
+        async function fetchMemecoins() {
+
             try {
-                const res = await fetch(`${BASE_URL}/price`);
-                const data = await res.json();
-                const priceEl = document.getElementById("price");
-                priceEl.innerText = `Price: ${data.price.toFixed(6)} (${data.symbol})`;
-                priceEl.classList.remove("error");
+
+                const res = await fetch(`${BASE_URL}/memecoins`);
+
+                const memecoins = await res.json();
+
+                const selectEl = document.getElementById("memecoinSelect");
+
+                selectEl.innerHTML = memecoins.map(m => 
+
+                    `<div class="memecoin-option" onclick="selectMemecoin('${m.symbol}')">${m.symbol} (Score: ${m.scamScore}, Liq: $${(m.liquidity * 200).toFixed(0)}, MC: $${(m.marketCap * 200).toFixed(0)}, Age: ${m.ageHours.toFixed(1)}h, Honeypot: ${m.isHoneypot ? 'Yes' : 'No'})</div>`
+
+                ).join('');
+
+                selectEl.classList.remove("error");
+
             } catch (e) {
-                const priceEl = document.getElementById("price");
-                priceEl.innerText = "Price: Error";
-                priceEl.classList.add("error");
+
+                const selectEl = document.getElementById("memecoinSelect");
+
+                selectEl.innerHTML = '<div class="memecoin-option error">Memecoins: Error</div>';
+
+                selectEl.classList.add("error");
+
             }
+
         }
+
+
+        let selectedMemecoin = null;
+
+
+        function selectMemecoin(symbol) {
+
+            selectedMemecoin = symbol;
+
+            document.querySelectorAll('.memecoin-option').forEach(el => el.classList.remove('selected'));
+
+            document.querySelector(`.memecoin-option[onclick="selectMemecoin('${symbol}')"]`).classList.add('selected');
+
+        }
+
+
+        async function updatePrice() {
+
+            try {
+
+                const res = await fetch(`${BASE_URL}/price`);
+
+                const data = await res.json();
+
+                const priceEl = document.getElementById("price");
+
+                priceEl.innerText = `Price: ${data.price.toFixed(8)} ${data.symbol}`;
+
+                priceEl.classList.remove("error");
+
+            } catch (e) {
+
+                const priceEl = document.getElementById("price");
+
+                priceEl.innerText = "Price: Error";
+
+                priceEl.classList.add("error");
+
+            }
+
+        }
+
 
         async function updateSentiment() {
+
             try {
+
                 const res = await fetch(`${BASE_URL}/sentiment`);
+
                 const data = await res.json();
+
                 const sentEl = document.getElementById("sentiment");
+
                 sentEl.innerText = `Sentiment: ${data.sentiment.toFixed(2)}`;
+
                 sentEl.classList.remove("error");
+
             } catch (e) {
+
                 const sentEl = document.getElementById("sentiment");
+
                 sentEl.innerText = "Sentiment: Error";
+
                 sentEl.classList.add("error");
+
             }
+
         }
+
 
         async function updateBalance() {
+
             try {
+
                 const res = await fetch(`${BASE_URL}/balance`);
+
                 const data = await res.json();
+
                 const balEl = document.getElementById("balance");
-                balEl.innerText = `Balance: ${data.SOL.toFixed(4)} SOL, ${data.SRM.toFixed(4)} SRM`;
+
+                balEl.innerHTML = data.map((b: any, i: number) => 
+
+                    `<div class="data">Wallet ${b.wallet}: ${b.SOL.toFixed(4)} SOL, ${b.token.toFixed(0)} ${selectedMemecoin || 'MEME'}</div>`
+
+                ).join('');
+
                 balEl.classList.remove("error");
+
             } catch (e) {
+
                 const balEl = document.getElementById("balance");
-                balEl.innerText = "Balance: Error";
+
+                balEl.innerHTML = '<div class="data error">Balance: Error</div>';
+
                 balEl.classList.add("error");
+
             }
+
         }
+
 
         async function manualTrade(action) {
-            try {
-                const res = await fetch(`${BASE_URL}/trade/${action}`);
-                const data = await res.json();
-                const statusEl = document.getElementById("status");
-                statusEl.innerText = `Status: ${data.status}`;
-                statusEl.classList.remove("error");
-            } catch (e) {
-                const statusEl = document.getElementById("status");
-                statusEl.innerText = "Status: Trade Error";
-                statusEl.classList.add("error");
+
+            if (!selectedMemecoin) {
+
+                alert('Please select a memecoin first!');
+
+                return;
+
             }
+
+            try {
+
+                const res = await fetch(`${BASE_URL}/trade/${action}/${selectedMemecoin}`);
+
+                const data = await res.json();
+
+                const statusEl = document.getElementById("status");
+
+                statusEl.innerText = `Status: ${data.status}`;
+
+                statusEl.classList.remove("error");
+
+                statusEl.style.animation = 'pulse 1s ease-in-out';
+
+                setTimeout(() => statusEl.style.animation = '', 1000);
+
+            } catch (e) {
+
+                const statusEl = document.getElementById("status");
+
+                statusEl.innerText = "Status: Trade Error";
+
+                statusEl.classList.add("error");
+
+            }
+
         }
+
 
         async function autoTrade() {
+
             try {
+
                 const res = await fetch(`${BASE_URL}/auto_trade`);
+
                 const data = await res.json();
+
                 const statusEl = document.getElementById("status");
+
                 statusEl.innerText = `Status: ${data.status}`;
+
                 statusEl.classList.remove("error");
+
+                statusEl.style.animation = 'pulse 1s ease-in-out';
+
+                setTimeout(() => statusEl.style.animation = '', 1000);
+
             } catch (e) {
+
                 const statusEl = document.getElementById("status");
+
                 statusEl.innerText = "Status: Auto Trade Error";
+
                 statusEl.classList.add("error");
+
             }
+
         }
 
-        async function updateAll() {
-            await Promise.all([updatePrice(), updateSentiment(), updateBalance()]);
+
+        async function startPaperTrading() {
+
+            try {
+
+                const memecoins = await fetchMemecoinsData();
+
+                for (const memecoin of memecoins.slice(0, 5)) { // Test top 5 memecoins
+
+                    const buyResult = await paperTrade('buy', memecoin);
+
+                    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate delay
+
+                    const sellResult = await paperTrade('sell', memecoin);
+
+                    updatePaperTrades();
+
+                }
+
+            } catch (e) {
+
+                console.error('Paper trading error:', e);
+
+            }
+
         }
-        setInterval(updateAll, 5000);
+
+
+        async function paperTrade(action: 'buy' | 'sell', memecoin: Memecoin): Promise<void> {
+
+            try {
+
+                const res = await fetch(`${BASE_URL}/paper_trade/${action}/${memecoin.symbol}`);
+
+                const data = await res.json();
+
+                console.log(`Paper ${action} result for ${memecoin.symbol}:`, data);
+
+            } catch (e) {
+
+                console.error(`Paper ${action} error for ${memecoin.symbol}:`, e);
+
+            }
+
+        }
+
+
+        async function fetchMemecoinsData() {
+
+            try {
+
+                const res = await fetch(`${BASE_URL}/memecoins`);
+
+                return await res.json();
+
+            } catch (e) {
+
+                console.error('Error fetching memecoins for paper trading:', e);
+
+                return [];
+
+            }
+
+        }
+
+
+        function updatePaperTrades() {
+
+            fetch(`${BASE_URL}/paper_trades`)
+
+                .then(res => res.json())
+
+                .then(data => {
+
+                    const tradesEl = document.getElementById("paperTrades");
+
+                    tradesEl.innerHTML = data.map((t: any) => 
+
+                        `<div class="paper-trade ${t.success ? '' : 'error'}">${t.memecoin} ${t.action} at ${t.timestamp} (Price: ${t.price.toFixed(8)}, Amount: ${t.amount}, P/L: ${t.profitLoss.toFixed(4)} SOL, Success: ${t.success})</div>`
+
+                    ).join('');
+
+                    tradesEl.classList.remove("error");
+
+                    const totalProfitLoss = data.reduce((sum: number, trade: any) => sum + trade.profitLoss, 0);
+
+                    tradesEl.innerHTML += `<div class="data">Total Profit/Loss: ${totalProfitLoss.toFixed(4)} SOL</div>`;
+
+                })
+
+                .catch(e => {
+
+                    const tradesEl = document.getElementById("paperTrades");
+
+                    tradesEl.innerHTML = '<div class="paper-trade error">Paper Trades: Error</div>';
+
+                    tradesEl.classList.add("error");
+
+                });
+
+        }
+
+
+        async function updateAll() {
+
+            await Promise.all([fetchMemecoins(), updatePrice(), updateSentiment(), updateBalance()]);
+
+        }
+
+        setInterval(updateAll, 3000); // Faster for sniping
+
         updateAll();
+
+        updatePaperTrades(); // Initial paper trades display
+
     </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
 </body>
+
 </html>
