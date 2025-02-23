@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Solana DEX Bot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            text-align: center;
+            -webkit-user-select: none; /* Safari */
+            user-select: none;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .data {
+            font-size: 20px;
+            margin: 10px 0;
+            transition: color 0.3s;
+        }
+        .data.error {
+            color: #ff5555;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            margin: 8px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            touch-action: manipulation;
+        }
+        button:hover, button:active {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+        #buyBtn { background-color: #007bff; }
+        #buyBtn:hover, #buyBtn:active { background-color: #0069d9; }
+        #sellBtn { background-color: #dc3545; }
+        #sellBtn:hover, #sellBtn:active { background-color: #c82333; }
+        #autoBtn { background-color: #ffc107; color: black; }
+        #autoBtn:hover, #autoBtn:active { background-color: #e0a800; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ultimate Solana DEX Bot</h1>
+        <div class="data" id="price">Price: Loading...</div>
+        <div class="data" id="sentiment">Sentiment: Loading...</div>
+        <div class="data" id="balance">Balance: Loading...</div>
+        <div class="data" id="status">Status: Waiting...</div>
+        <button id="buyBtn" onclick="manualTrade('buy')">Buy</button>
+        <button id="sellBtn" onclick="manualTrade('sell')">Sell</button>
+        <button id="autoBtn" onclick="autoTrade()">Auto Trade</button>
+    </div>
+
+    <script>
+        const BASE_URL = window.location.origin;
+
+        async function updatePrice() {
+            try {
+                const res = await fetch(`${BASE_URL}/price`);
+                const data = await res.json();
+                const priceEl = document.getElementById("price");
+                priceEl.innerText = `Price: ${data.price.toFixed(6)} (${data.symbol})`;
+                priceEl.classList.remove("error");
+            } catch (e) {
+                const priceEl = document.getElementById("price");
+                priceEl.innerText = "Price: Error";
+                priceEl.classList.add("error");
+            }
+        }
+
+        async function updateSentiment() {
+            try {
+                const res = await fetch(`${BASE_URL}/sentiment`);
+                const data = await res.json();
+                const sentEl = document.getElementById("sentiment");
+                sentEl.innerText = `Sentiment: ${data.sentiment.toFixed(2)}`;
+                sentEl.classList.remove("error");
+            } catch (e) {
+                const sentEl = document.getElementById("sentiment");
+                sentEl.innerText = "Sentiment: Error";
+                sentEl.classList.add("error");
+            }
+        }
+
+        async function updateBalance() {
+            try {
+                const res = await fetch(`${BASE_URL}/balance`);
+                const data = await res.json();
+                const balEl = document.getElementById("balance");
+                balEl.innerText = `Balance: ${data.SOL.toFixed(4)} SOL, ${data.SRM.toFixed(4)} SRM`;
+                balEl.classList.remove("error");
+            } catch (e) {
+                const balEl = document.getElementById("balance");
+                balEl.innerText = "Balance: Error";
+                balEl.classList.add("error");
+            }
+        }
+
+        async function manualTrade(action) {
+            try {
+                const res = await fetch(`${BASE_URL}/trade/${action}`);
+                const data = await res.json();
+                const statusEl = document.getElementById("status");
+                statusEl.innerText = `Status: ${data.status}`;
+                statusEl.classList.remove("error");
+            } catch (e) {
+                const statusEl = document.getElementById("status");
+                statusEl.innerText = "Status: Trade Error";
+                statusEl.classList.add("error");
+            }
+        }
+
+        async function autoTrade() {
+            try {
+                const res = await fetch(`${BASE_URL}/auto_trade`);
+                const data = await res.json();
+                const statusEl = document.getElementById("status");
+                statusEl.innerText = `Status: ${data.status}`;
+                statusEl.classList.remove("error");
+            } catch (e) {
+                const statusEl = document.getElementById("status");
+                statusEl.innerText = "Status: Auto Trade Error";
+                statusEl.classList.add("error");
+            }
+        }
+
+        async function updateAll() {
+            await Promise.all([updatePrice(), updateSentiment(), updateBalance()]);
+        }
+        setInterval(updateAll, 5000);
+        updateAll();
+    </script>
+</body>
+</html>
